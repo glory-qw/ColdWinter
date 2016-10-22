@@ -1,2 +1,2 @@
 # ColdWinter
-on the colde Winter, I start coding!
+on the cold Winter, I start coding!

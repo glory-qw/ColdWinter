@@ -1,0 +1,168 @@
+1.根据不同的常量，执行同一个方法的不同实现，可以用枚举实现。
+
+2.每当我们觉得我们无法完成一项任务或者做成一件事情的时候，是因为我们在试图去做着一件不可能实现的事情，而我们却还强迫自己去完成。
+  有些人，他们或将任务分解成可以完成的，或者他们换了一个方式去完成。而我们却还在一次次不停地继续强迫着自己。
+  他们完成了，而我们还在不停地重复不肯能完成的事，然后永远无法完成。
+
+3.什么时候进行代码的分层以及函数和类的封装 -  - - 当同样流程的业务很多，每个业务都有这些步骤，就可以考虑封装。同样的事情写在一个方法里。
+
+
+4.代理 美国代理 ： proxyus3.huawei.com 香港代理：proxyhk.huawei.com
+
+1.华为  android studio的使用，需要配置网管证书，以及将证书导入jdk。参考h3内部网址。
+
+jcenter{
+            url "http://jcenter.bintray.com/"
+        }
+
+2.android support.degian library的使用。
+
+网址： http://3ms.huawei.com/hi/blog/5407_1629101.html
+
+
+1.Android studio 可以在 File -- project structure（工程结构）中sdk Location 中配置 sdk，jdk以及ndk的路径。
+
+2.Android apk 工程目录 其实只有一个 src -java--c/c++；一个res资源文件；一个manifest。xml清单文件 ；一个libs第三方库文件。基本上只有这些。其他的就不属于android的范畴了，要么是在eclipse下使用ant或者makefile打包构建，要么是在android studio下使用gradle打包构建。
+
+3.构建工具 1.maven 2.makefile 3.ant 4.gradle。其实web也是和android差不多的工程结构。几乎一模一样。
+
+4.android studio 生成头文件 ：
+尝试了各种方法，报了各种错误，最后找到在Android studio环境下开发生成.h文件的正确姿势
+
+1， 从Android Studio的Terminal里进入到， <Project>/src/main/java 目录下，一定要刀这个文件夹下来执行命令操作。
+2， 执行javah XXX.XX.XXX 即可，   XXX.XX.XXX是要生成.h文件的完整路径名，包名+文件名
+3， 然后就会在当前目录下生成相应的.h文件。
+*无需切换到build/intermediates/classes/debug/文件夹下，也无需配置-classpath环境变量。
+
+1.android hybrid开发，其实和原生的也差不多，android有自带的webView，而且android也允许去加载一个网页作为界面。此外其他语言与C/C++，javaweb其实原理都一样。还是那句话，东西就这么多，学会了都通了，不需要一直改变平坦，java web也好android也好，选一个走下去即可。
+
+2.自然用户界面  -- 少数派报告
+
+3.Android Java混淆(ProGuard)
+
+4. android studio 中ndk开发
+
+    ndk {
+            moduleName "hello"
+            ldLibs "log"
+            abiFilters "armeabi", "armeabi-v7a", "x86"
+        }
+    写在app的build.gradle文件 android 下面的 defaultConfig里面
+
+5. windows 平台的 exe文件 bat文件dell文件 等等，linux平台的so文件 sh文件 等等都是使用的Runtime.getRuntime().exec()方法来调用。
+   分布式应用 Android使用的AIDL，Java原声RMI。
+   底层为JNI方法调用其他语言，上层也可以与Web混合，成为Hybrid 混合开发。
+   服务器客户端有socket 、http、 udp 、xmpp协议等等。XMPP是一个典型的C/S架构.
+   使用JNI就可以调用一些底层的硬件了。使用定义好的或者直接是自己去写接口都可以的，往下路是可以打通的。
+   猜想：OpenGL要不使用Java封装好的库，要不就是使用C/C++语言去写。
+   
+1. android studio中使用android 隐藏的jar包layoutlib.jar的方法：
+   在 app build.gradle中android{}之后，定义方法：
+   def getLayoutLibPath(){
+    return "${android.getSdkDirectory().getAbsolutePath()}"+"/platforms/"+android.compileSdkVersion+"/data/layoutlib.jar"
+   }
+   在android{}之后的dependencies {}中使用provided files(getLayoutLibPath())引入该jar包。
+2. jar 反射机制获得Class对象的方法：
+   1. xxx.class
+   2.Class.forName()
+   3.获取一个ClassLoader类的对象，如PathClassLoader，如UrlClassLoader然后用该类的对象的loadclass方法去加载。
+   不同的时候使用不同的方法。
+3. apk文件在哪儿？
+   1.Eclipse下App放置在项目根目录的bin目录中
+ 
+   2.而Android studio大改后，放在了module中，所以你一定要记得你的存放路径。也就是工程对应的文件夹。
+ 
+     android studio工程的存储路径下app/build/outputs/apk
+ 
+    其中app是你的module，在对应的module下即可找到。
+4.反射获取内部类，$是关键：Class<?> cStub = Class.forName("com.android.internal.app.IUsageStats$Stub");
+  获得IUsageStats.Stub类
+5.将 Android APK安装到特定目录如：/data/app 或者 /system/app 或者 /system/priv-app ：
+     将该目录赋予读写权限，如：mount -o rw,remount /system
+	 adb push apk 目录
+	 reboot即可。
+	 注意：apk的名字要和代码中的AppName一致。否则不行。android studio需要改一下
+	 
+1.Android系统的操作
+   /目录下 ：init.rc中定义了许多服务，大致等同于windows的注册表
+   setprop ctl.start xxx 可以启动里面的服务，其中setprop ctl.start bootanim可以启动开机动画
+   apk的so文件在/system/lib目录下
+   而普通的apk自动安装到/data/app目录下，系统app安装到/system/app目录下。
+   重启系统为 reboot ，在adb中重启 为 adb reboot
+   
+ Android开发不难找工作，看能力，jni的学习需要知道c++或者c方面的知识，jni刚刚开始还是很难的，特别是javaVM和JNIEnv方面的知识得好好了解，还有有一些比较麻烦的就是java和c++有数据交互的情况下也麻烦一些，要建立相应的数据结构并且需要转换，一般需要用到jni都是一些简单的，比如java调c++或者c++调java之类的，涉及到多线程就麻烦些，得到了刚刚说的javavm以及jnienv
+
+ 可能需要C层 SystemProperties或者系统中将SystemProperties类的权限提升问题。这两个方向。有一个打通既可以继续往下走了。
+ 
+2.APK应用程序系统签名 - 系统签名-应用程序签名 --原理，方式
+  [java -jar signapk.jar platform.x509.pem platform.pk8 input.apk output.apk]
+  签名，发布
+  不签名和签名的区别，签名的意义。
+adb shell命令
+         adb push xxx.apk /system/app
+		 adb push xxx.apk /system/priv-app
+		 adb push xxx.apk /data/app
+		 adb push xxx.so /system/lib
+		 reboot  //重启手机
+		 adb reboot //重启手机
+		 mount -o rw,remount /system  更改/system目录的读写权限
+		 init.rc --服务 //大致等同于windows的注册表
+		 签名 -- 发布Android程序必要有签名，无签名不能安装，而eclipse和android studio是有签名的，给打包的debug签名而已。在：
+		 在Eclipse中Windows > Preferences > Android  > Build可以看到你keysotre的位置。
+		 有签名，如果Android手机里面已经有了一个报名相同的apk,但是他们的签名不一样，则不能安装，必须卸载掉原来的apk才能安装。
+		 如果要想使得apk拥有系统权限，则必须要拿到系统的签名，这个签名，每个手机厂商都不一样。一般人也拿不到。
+		 
+		 有办法吗？？有！自己ROM一个Android系统上去，然后自己测试硬件，就可以了。
+3.android 开机动画：
+ 就是这个文件：/system/media/bootanimation.zip的一个压缩文件，里面有一个desc.txt的描述文件和part0和part1中两个文件夹，里面是很多图片，这个图片按顺序播放构成了开机动画。
+ 可以替换它，从而换成自己想要的开机动画。如果删掉它，则会换成google自带的开机动画。
+ 302 480 5
+ p 1 0 part1
+ p 0 0 part2
+ bootanimation.zip的制作需要去找资料学习一下。
+ http://www.cnblogs.com/wanqieddy/archive/2012/09/17/2688366.html
+ 
+ 开机动画的原理是通过启动 setprop ctl.start bootanim 即init.rc中的anim服务来启动的。在C语言中调用systemproperties_set属性来启动的。
+ 关机动画同理。开机关机音乐也是同理。文件  shutdownanimation.zip 系统会执行bootanimation -shutdown的shell命令
+ 
+ 在init.rc文件中添加一个类似于开机动画service
+
+代码如下：
+
+service shutdownanim /system/bin/bootanimation -shutdown
+
+    user graphics
+
+    group graphics
+
+Disabled
+ 
+ 二. 开机动画的服务
+
+1. 文件位置
+
+/system/core/rootdir/init.rc
+
+该文件定义了许多的服务，其中就定义了开机动画的服务，代码如下：
+init.rc中服务：
+service bootanim /system/bin/bootanimation 
+
+    user graphics
+
+    group graphics
+
+    disabled
+
+oneshot
+4.android关机充电动画：
+/system/media/chargeranimation.zip这个动画压缩包是关机状态充电电量变化显示界面，我们知道开关机动画和声音都可以精简掉，但是这个绝不可以；否则，在你关机充电过程中，屏幕上是没有任何显示的
+
+5.reboot 有个参数叫 -p, 也就是 --poweroff, 可以关机
+6.那我还想问一下 在源代码下编译生成的apk程序能直接安装在其他手机上吗？
+  生成的若是完整的apk（4.0 ics中默认mm编译出来的apk是不完
+整的，记得要加上WITH_DEXPREOPT := false），应该是可以
+安装到其他手机上的（也要注意Android版本，不可能希望使
+用到高版本的api能够在低版本的Android系统上正确运行吧）。
+记得还要注意目标手机是否有安装apk时的签名机制等……
+
+7.android终端：http://www.xuebuyuan.com/1835308.html

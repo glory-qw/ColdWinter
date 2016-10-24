@@ -21,3 +21,29 @@ android:layout_below="@+id/section_label"的意思
 		});
  匿名内部类不能调用外部方法中的变量值 按钮点击事件创建出的饿匿名内部类中，不能直接调用外部类方法中的变量，可以调用外部类的属性
  
+day2:
+1.Layout, Values,Menu,Color List,Prefrence,Drawable,App Widget Provider,Tween Animation,Property Animation 10中类型
+2.android官方习惯：Listener接口定义在在控件内不作为内部类。比如View的OnClickListener ，Preference的OnPreferenceChangeListener接口也定义在内部
+3.android官方习惯：私有属性或者控件已m开头区分外部传入的。如mList。
+4.英文单词简写规则 frgm = fragment，arg = argument
+使用解析Layout格式的xml布局方法去解析preferred xml布局，出现错误：inflateException:Binary XML file #2:Binary XML file line #2 Error inflating class: PreferenceScreen
+Preference类型的文件有自己的解析方法，不能使用LayoutInflate类的方法去加载了。 因为OnCreateView方法中的参数是LayoutInflate，所有不在OnCreateView中加载，而是在OnCreateView中加载
+
+在PreferenceFragment中的OnCreateView（）{增加 addPreferencesFromResource(R.xml.fragment_settings);}意思等同于layout类型在activity中使用setContentView(R.layout.activity_main);
+当然硬要在OnCreateView中加载也是可以的，因为按照fragment的生命周期 OnCreate -> OnCreateView 所以也会被执行，但是不要用OnCreateView 给的LayoutInflate，并把它给的在原封不动的在返回去
+PreferenceScreen中的控件有个android:key的属性，通过这个属性来获取该控件 方法：findPreference(key); adnroid加载Preference是把他当做xml文件解析的，树的结构
+
+PreferenceScreen中的控件也是控件，也要有事件监听，一般是值被改变的是的监听OnPreferenceChangeListener，要给他set监听，方法和Button等控件一样，但他的事件监听定义在Preference中，可以使用匿名内部类set。
+由于PreferenceScreen中的控件所有的都有该方法，因此建议集中绑定，即在类中定义一个属性，但后当改变事件到来时，获取哪一个去执行，绑定也一起绑定。
+普通的Layout中的控件，当入到相同的事件是耶建议这么做。
+
+疑问：1.Preference控件改变的值提交到sharePreference的后两步；2.其他activity怎么读取sharePreference中Preference的值
+
+解决：在xml中写了<PreferenceScreen>之后，在Fragment或者Activity中加载完了资源文件之后，在界面上修改了偏好后，已经实现了将设置保存到sharedpreferences，不需要我们在自己写代码去实现。
+我们要做的就是在需要用到的地方去读取。从一个context对象中获取sharedPreference然后，在他里面通过key键获取值，唯一要做的就是我们他的监听事件，有必要的时候在用，没必要也可以不写。
+
+5. activity 或 fragment的onResume方法 resume 从新开始，继续，回复职位
+
+6. PreferenceManager。getDefaultS不提示是因为这个.是中文的
+
+7.对于那些值不会改变的，如按钮等，给他加上final，以确保它不会被改变

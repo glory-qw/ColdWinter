@@ -1,0 +1,12 @@
+在Android app开发方向有丰富的知识积累和技能储备。
+掌握Java编程语言知识。了解必要的C/C++语言知识。
+掌握Android 四大组件等为核心的基础知识。
+熟悉Linux操作系统常用命令。
+掌握Android多线程、网络、AIDL、framework层、UI控件、NDK开发，多媒体，sensor等高级应用。
+熟悉主流sdk的sdk的接入，接触过一些开源库的使用。
+熟悉Web开发HTML、CSS、JavaScript、JQuery 对Android Hybrid混合开发有一定的兴趣。
+熟悉NDK开发，framework层和系统层。
+熟悉Java开源框架Spring MVC、spring、mybatis、struts2、hibernate等。
+熟悉Android数据库的开发。
+熟悉XML/JSON协议。
+有独立开发能力。

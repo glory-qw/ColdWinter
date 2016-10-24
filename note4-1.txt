@@ -1,0 +1,46 @@
+1.InputStreamReader类的read(char[])方法的用法：
+  char[] buf = new char[4];
+  FileInputStream fis = new FileInputStream(file);
+  InputStreamReader isr = new InputStreamReader(fis);
+  int bufLength ;
+  StringBuilder sb = new StringBuilder();
+  while((bufLength  = isr.read(buf))!=-1){
+	  for(int i =0;i<r;i++){
+		  sb.append(buf[i]);
+	  }
+  }
+  readc传入的是一个缓冲去的char数组，它会将读取的东西，写入到数组缓冲区中，返回值是缓冲区的长度length。
+  我们要的数据去读这个换成那个区的数组就可以了。
+
+2.Android开发的过程中，每次调用startService(Intent)的时候，都会调用该Service对象的onStartCommand(Intent,int,int)方法，然后在onStartCommand方法中做一些处理。然后我们注意到这个函数有一个int的返回值，这篇文章就是简单地讲讲int返回值的作用。
+
+返回值
+从Android官方文档中，知道onStartCommand有4种返回值：
+
+START_STICKY：如果service进程被kill掉，保留service的状态为开始状态，但不保留递送的intent对象。随后系统会尝试重新创建service，由于服务状态为开始状态，所以创建服务后一定会调用onStartCommand(Intent,int,int)方法。如果在此期间没有任何启动命令被传递到service，那么参数Intent将为null。
+
+START_NOT_STICKY：“非粘性的”。使用这个返回值时，如果在执行完onStartCommand后，服务被异常kill掉，系统不会自动重启该服务。
+
+START_REDELIVER_INTENT：重传Intent。使用这个返回值时，如果在执行完onStartCommand后，服务被异常kill掉，系统会自动重启该服务，并将Intent的值传入。
+
+START_STICKY_COMPATIBILITY：START_STICKY的兼容版本，但不保证服务被kill后一定能重启。
+
+3. 我们为什么需要继承一个父类，第一出一个新类，而不能直接通过 Thread t = new Thread（）{ run{。。。}}来写呢？
+   这就是Thread t 和 new Thread（）直接的分别了。
+   我们Thread t = new Thread（）其实做了两步，第一步，new Thread（）创建出一个对象，第二步Thread t =这个对象。
+   第一步决定了这个类有哪些实现，有哪些方法，但是第二步决定了，我们的类有哪些属性被定义，我们能用哪些属性和方法。如果一个属性，只在后面被复写，而前面声     明的对象中未定义这个属性，我们无法使用。所以我们才要 重 新 声 明 一个新的类。
+
+4. Snackbar一种类似于Toast的东西，但是比Toast要灵活
+   Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", new View.OnClickListener(){
+
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(MainActivity.this, MyActivity.class);
+                                startActivity(intent);
+                            }
+                        }).show();
+
+5. gallery 画廊，比什么photos和picture之类的名字要好得多
+
+6. SVG学习--VectorDrawable的使用

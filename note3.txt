@@ -1,0 +1,123 @@
+第三周：
+//post 和sendMessage的区别?
+//EmptyMessage 和Message区别 传递的值只有一个的时候，不用再自己创建Message对象，这个方法里会把我们的值包装成Message Delay 延迟
+
+                final Handler h = new Handler();
+		new Thread(){
+			public void run() {
+				h.post(new Runnable(){
+					@Override
+					public void run() {
+						showingText.setText("handler...post");
+					}
+				});
+			}
+		}.start();
+先说一下Thread线程的创建方式，一个是继承自Thread类，重写Thread类的run()方法，如果重写就执行默认的run()方法,调用他的start()方法将线程就绪；
+另一种是实现Runnable接口，接口中的实现run()方法。将我们实现Runable结构的类（注意：不是线程，因为他没有线程的生命周期和方法），他只是实现了Runable接口的run方法而已。
+还是要创建一个Thread类对象，将我们实现Runable接口的类作为Thread的构造方法的参数传递过去，使用Thread线程类的对象的start方法将其启动。这样执行的就是我们自己的Run方法了。
+第三种其实和第二种的原理一样，但写法不一样：Runable run = new Thread();这种方法 一般没有人用，因为他只有一个run方法，没有别的方法了，这样用没啥意思。
+他和设计模式中的 Interface i = new InterfaceImp()的这种用处不一样，它更像是一个回调listener接口所以叫callback。
+其实在Thread类也实现了Runable接口，它也有自己的Runable接口对象，如果你不给他，它就用默认的，给他他就被复写了，用我们自己的。
+ok，继续看下面的：
+其中Handler h = new Handler();必须写在外面，因为new Handler()其实调用的new Handler(looper,false);在主线程中null被自动创建为MainThread.getLooper();
+然后looper调用的是MainThread主线程中默认的run()方法。而把post(Runable)过去，就是将runnable作为Thread的构造方法参数传递过去，然后还是调用的sendMessage方法。最后因为我们的run方法已经覆盖了
+MainThread主线程中的run方法，所以就调用我们自己的run方法，然后我们把我们对于UI的更改操作写在这里面，当然是在主线程中修改了。而handleMessage则调用默认的，没被复写的。
+
+还要注意的是，如果想要在主线程中更新UI，则必须在主线程中创建Handler对象，否则就不是在主线程中更新UI了。或者将主线程的的给他。
+
+在主线程中 Handler h = new Handler（/*looper,callback*/）{
+                public void handleMessage(){
+                    //todo
+                }
+      
+           }
+然后再别的线程中,我们开启的子线程中使用 h.sendMessage（）；调用即可。
+
+最终都是子啊主线程的run方法中执行，要不复写它，要不就是在主线程中callback handleMessage方法。
+
+Thread.sleep()方法和 Delayed的意思可是不一样的，Thread.sleep()的意思是到这里沉睡多少毫秒 。而Delayed是延迟多少秒发送，如果用到循环里，则他会所有的循环都算出来，然后到延迟时候在发送。
+
+1.耗时型操作，对UI更新数据量大的，不要一直去更新UI，应该把更新UI方法最后，因为一直更新UI，也很容易形成堵塞。还有，一定要加进度条，有进度显示和没有感觉真的不一样。天差地别，有进度条感觉很流畅，没有感觉就像界面卡死了一样。
+
+2.响应的时间只要超过5s就要开线程。只要超过20秒就要有进度条！
+
+3.即便是开线程，频繁网UI更新大量数据，如非常长的字符串，也会导致界面ANR。对于这样的，最好是在线程任务解过结束后一次更新，或者分间隔大的几次，不要频繁去操作UI。
+
+4.WeakReference<T>的使用：
+ 1.将所在的外部类 作为参数，在构造方法中传过来。
+ 2.生命一个外部类的WeakReference<T> mt 属性。
+ 3.在构造方法中使用mt = new WeakReference<T>（t）；
+ 4.在内部类需要用到外部类参数的时候：
+    T t = this.mt.get();
+      t.属性 = xxx；
+
+ 5.
+    a. staitc cannot be used at Package level.
+    b. statuc is possible within the Class level.
+    c. But you can still use static on a class,when the class is inner class,ie.(static inner class) commonly known as Top level class.
+
+6. 外部类一共有6中修饰组合 public public final ；public abstract； default default final default abstract；但是后三种不推荐，因此只有 3种。
+   内部类 ，除了 public private protected三个不能同时出现，final和abstract不能同时出现，其余均可以。
+
+
+1.x86与ARm
+  操作系统
+  程序开发语言
+
+2.蓝牙通信 ：操作设备上的蓝牙：BluetoothAdapter类,静态单例类 蓝牙设备抽象类 BluetoothDevice 蓝牙连接通信 BluetoothServerSocket和BluetoothSocket
+
+  a.获取蓝牙适配器
+  b.通过蓝牙适配器检查是否开启蓝牙，开启蓝牙，关闭蓝牙，搜索其他蓝牙设备，将本机置为可以被搜索的设备等等。
+
+3.蓝牙与其他设备通信，前面的可以不用管的，只需要检查本设备是否有配对的设备，读取到所谓配对的设备就可以了。选择配对的设备，作为客户端socket去连接它。
+  向其发送内容，或者去读取其上的内容。而同时另一端所谓服务端serverSocket监听UUID，得到socket，然后进行IO操作即可了。这种连接也是长连接。
+  一台设备可以同时作为客户端又同时作为服务端，建立P2P模式的连接。只需要同时实现socket和serversocket的即可。需要注意的连接网络，已经最为服务响应，都是耗时型操作，需要单独开启线程。
+ 蓝牙通信技能已储备
+
+4. string 字符串substring方法，截取一段字符串。concat 连接一段字符串 indexOf(":") 第一个 : 在字符串的第几个字符，配合使用 substring(indexOf(:)+1,indexOf(:)+5) ,意思：截取 :的后面一个1到底5个的字符串 123456:abcdef 结果：abcde 
+
+5.页面层和Service层的区别是一个是调度者，一个是处理者，页面层负责调度，具体的业务处理和逻辑实现，它并不做，以及数据的组织。
+
+
+1.两种参数化Bean Serializable 和Parcelable的使用
+2.Parcelable不能参数化boolean类型，可以使用巧妙的方法实现。Parcelable可以参数化ArrayList.
+
+
+1.int crruntIndex = 3;
+  int cycleIndex = 6;
+  String.format("%.2f%%", ((float)crruntIndex/(float)cycleIndex)*100);
+  两个int类型相除 ，如3/5，其结果是0，而不是0.6 ，后面自动舍弃。如果想要得到0.6,则要把两个int都强转为float在相除。(float)3/(float)5
+  不过得到的小说是6为的，如果想要得到两位小数，可以使用格式化字符串 两位小数占位符 %.2f %号的占位符%%
+
+2.//Math.round()方法，取整，遵循 四舍五入
+    System.out.println(Math.round(-11.1));
+    System.out.println(Math.round(-11.9));
+    System.out.println(Math.round(11.1));
+    System.out.println(Math.round(11.9));
+3.有空再研究研究随机数
+    int rn = (int)(Math.random()*100);
+
+4.在activity中或者fragment中使用 startActivityForResult 这个方法启动activity， 要接受被启动的activity返回来的值，也必须重写本Activity 的onActivityResult()方法接受其值。
+而在另一个activity要返回的时候 要使用setResult(RESULT_OK, data);或setResult(RESULT_CANCELED);将Intent的传过来。
+如果使用setResult(RESULT_CANCELED)将不会执行onActivityResult()方法。
+
+
+5.刚接触Android Dialog的时候以为Dialog应该也会想Java Web一样那么内部类嵌套内部类，很复杂。于是一直没有学习这块，谁知道用的时候，用来却是很简单，完全不像Java Web中的那么复杂。
+但是今天用起来，我觉的恐怕我想错了，没道理JavaWeb的时候那么难，而Android中这么简单。于是今天遇到坑了。
+  如果不适用内部类的嵌套，Dialog在他内部的按钮中，无法做到回调销毁自身。如果不销毁自身，那么根本就用不到内部类的嵌套。但是不销毁自身根本是不可能的。
+  所以内部类的嵌套也是必须的。不过android也是有别的实现方式，就是在Activity中有onCreatDialog何onPrepraeDialog方法用于管理它。这种方式将Activity看做Dialog的容器，其原理和Fragment的管理差不多，以后有时间可以研究一下。
+
+6.List 和ArrayList的排序其实很简单，就是Collections.sort(files)就可以了。然后让要排序的实体类实现它的接口，重写一下它排序算法，就是指定主键。
+
+
+第四周：
+1.make和init的区别，init是已经存在了，但是数据还没有准备，给它初始化数据  make，模型已经存在，对象还不存在，数据还没有准备，就可以make。而create是创造一个全新的。
+2.Fragment之间如何交互操作，比如在Fragment A中的按钮 ，如何操作Fragment B中的控件。。
+  答案是使用接口回调：
+  在Fragment中定义一个接口，在onAttach(Activity activity)中 ，将activity)强转为这个接口的类型，然后再需要的地方使用接口去回调函数。在Activit中实现接口。
+3.Manager、Builder、Utils、等区别
+
+
+4.android 4.4版本以上，不支持写入sdcard。
+ 

@@ -1,0 +1,23 @@
+day1:
+1.HAXM
+2.Toast控件
+3.tools:context="com.huawei.test3.MainActivity$PlaceholderFragment"属性的意义
+4.LayoutInflater类inflate第三个参数的意义
+5.颜色标签：如果是6为则为红红绿绿蓝蓝 ：如果是其8为则前两位为透明度
+android:layout_below="@+id/section_label"的意思
+
+
+               EditText etShell = (EditText) rootView.findViewById(R.id.sigle_shell);
+		
+		
+		Button btnRun = (Button)rootView.findViewById(R.id.adbshell_run);
+		String b = "dd";
+		btnRun.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Toast.makeText(getActivity(), b, Toast.LENGTH_SHORT).show();
+			}
+		});
+ 匿名内部类不能调用外部方法中的变量值 按钮点击事件创建出的饿匿名内部类中，不能直接调用外部类方法中的变量，可以调用外部类的属性
+ 

@@ -1,0 +1,77 @@
+1.Android国际化与本地化，大概需要27个国家的语言，视情况而定，根据APP市场而定。
+  values-zh-rCN  中国
+  values-zh-rTW  台湾
+  values-zh-uk   英国
+  values-zh-ja   日本
+  values-zh-ko   韩国
+  主要更改目录下strings.xml和arrays.xml文件以及其他的一些需要语言翻译的文件。
+  由此也看出了将布局文件，app代码中的字符串、颜色、动画等等写到values目录下的重要性。
+  -------------------------------
+2.适配分辨率,除了适配本地化和国家化，还有另一个用处就是适配分辨率
+  如：
+  values-1086*1920
+  values-w800dp
+  -------------------------------
+3.视频当前系统版本，还可以适配Android操作系统的版本。
+  values-v14
+  values-v17
+  等等。
+
+4.发布的代码一般有readme.md和notice两个文件一个是帮助==前言，一个是版权声明。 docs目录
+
+5.一个项目大致分为三个问题： 1.人性化的丰富的UI ，2 严密的，强壮的，效率高的业务逻辑 3. 组织好的数据
+
+6.Android studio 更改module名字 选中要更改的module -- Refactor - > rename - > rename module 即可。
+
+7.在ActionBar上增加一个下拉列表，简单使用：
+  1.　生成一个SpinnerAdapter,设置ActionBar的下拉菜单的菜单项
+  2.　实现ActionBar.OnNavigationListener接口，当点击ActionBar的菜单项是进行相应的操作
+  3.　调用setNavigationMode()方法将ActionBar的操作模型设置为ActionBar.NAVIGATION_MODE_LIST.　注意：这个步骤应该在Activity的onCreate()回调函数时执行
+  4.　调用setListNavigationCallbacks()方法为ActionBar添加适配器和监听器.
+  1.<string-array name="action_bar_list">  
+    <item>日历显示</item>  
+    <item>时间轴显示</item>  
+    </string-array>
+  2.ActionBar actionBar = getActionBar();  
+    //设置actionbar的导航模式  
+    actionBar.setNavigationMode(actionBar.NAVIGATION_MODE_LIST);  
+    //生成一个spinneradaper，设置actionbar下拉菜单的菜单项  
+    SpinnerAdapter spinnerAdapter = ArrayAdapter.createFromResource(this, R.array.action_bar_list, android.R.layout.simple_spinner_dropdown_item);  
+    //为actionbar设置适配器跟监听器  
+    actionBar.setListNavigationCallbacks(spinnerAdapter,new DropDownListener());  
+  3.private class DropDownListener implements OnNavigationListener  
+   {  
+  
+    @Override  
+    public boolean onNavigationItemSelected(int itemPosition, long itemId)  
+    {  
+        // TODO Auto-generated method stub  
+        return false;  
+    }  
+          
+    }  
+	总的来说SpinnerAdapter也算是高级空间了，用起来不必ListView简单。
+
+8.应用程序的主界面非常华丽，但是打开MainActivity的布局文件，发现只有一个标签像这样：<jackpal.androidterm.TermViewFlipper></jackpal.androidterm.TermViewFlipper>而这个标签还是继承于最简单的View。
+  其实不用紧张，Android的界面上的内容并不是所有的东西都在这个布局文件中。
+  其中，ActionBar一般不再这里设置，而在values文件夹中。
+        他的主题Theme也不再这里设置。
+		它的菜单项Menu也不再这里写。
+		等等其他，所以并不必紧张。
+  android一个界面再复杂，其实最多也是自定义的的View或者自定一个ViewGroup。而他的界面就是界面，界面数据就是界面数据，两者分离，善用抽象思想，知道这里点，多么复杂的界面，多么没见过的界面都不需要怕。 
+
+9.使用ToolBar代替ActionBar：
+  <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimaryDark"
+        app:titleTextColor="@android:color/white"
+        android:fitsSystemWindows="true"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/> 
+		
+10.GridView和ListView还是有些差别的。
+
+11. Firefly --服务器框架 --GitHub开源游戏
+#######################################################################################################

@@ -1,0 +1,142 @@
+1.Android：控件 AutoCompleteTextView  客户端保存搜索历史自动提示 
+
+  MultiAutoCompleteTextView
+可支持选择多个值（在多次输入的情况下）,分别用分隔符分开，并且在每个值选中的时候再次输入值时会自动去匹配
+可用在发短信，发邮件时选择联系人这种类型当中。
+使用时需要执行设置分隔符方法
+ 
+AutoCompleteTextView
+支持基本的自动完成功能，适用在各种搜索功能中，并且可以根据自己的需求设置他的默认显示数据
+ 
+两个控件都可以很灵活的预置匹配的那些数据，并且可以设置输入多少值时开始匹配等等功能
+
+
+2.与界面的交互：
+  如果用户点击了按钮button后，还要停留在当前页面，则要将该按钮设为 btn.setEnable(false)；将按钮设置为不可用状态，防止用户重复点击。
+  如果一个操作在目前状态下无权限操作，或者没必要出现，则设置该控件为View.INVISIBLE或者View.GONE
+  v1.setVisibility(View.VISIBLE);   //正常显示
+  v1.setVisibility(View.INVISIBLE); //隐藏参与布局（还占着地方）
+  v1.setVisibility(View.GONE);      //隐藏不参与布局（不占地方）
+
+3.Activity一共有以下四种launchMode：   ？？？？？？？？？？？？？？？？？
+  1.standard  
+  2.singleTop
+  3.singleTask
+  4.singleInstance
+
+
+4 Service的启动方式分两种，不同的启动方式决定着它的作用域长度不一样。
+  1：Context.startService() 
+  2：Context.bindService()
+
+  1：通过startService启动的服务，会一直存在，即便你退出应用了也会一直运行，直到调用onDestroy（）方法才会结束。这种服务是需要在AndroidManifest.xml中进行     注册的。
+  2：通过bindService启动的服务，意为与某个客户端（如Activity）绑定在一起，它会随着该客户端的生命周期运行，结束的时候调用unbindService()进行解绑。
+
+5 home键 back键 finish() onDestroy() System.exe（0）System.gc(); 提示系统回收资源 的区别
+
+6. Android程序的隐藏与退出
+
+Android的程序无需刻意的去退出,当你一按下手机的back键的时候，系统会默认调用程序栈中最上层Activity的Destroy()方法来销毁当前Activity,当此Activity又被其它Activity启动起来的时候,会重新调用OnCreate()方法进行创建,当栈中所有Activity都弹出结束后,应用也就随之结束了.如果说程序中存在service之类的,则可以在恰当的位置监听处理下也就可以了.
+
+Android程序的隐藏,当你按下手机的Home键的时候,系统会默认调用程序栈中最上层Activity的stop()方法,然后整个应用程序都会被隐藏起来,当你再次点击手机桌面上应用程序图标时,系统会调用最上层Activity的OnResume()方法,此时不会重新打开程序,而是直接进入,会直接显示程序栈中最上层的Activity.
+
+现在的情形是,一个应用程序带有启动画面或者启动动画,进入程序后进行操作,当应用程序退到主Activity的时候,再按back键或者程序中自己写的back按钮,此时程序会结束当前主Activity,当再次点击应用程序图标时,程序会重新打开,会从头显示启动画面,对于用户来说,就知道这个程序刚才已经被结束掉了,而用户的本意是显示桌面,为什么我退出的时候都没有提醒一下！例如带有启动画面的音乐播放软件,如果程序没有做任何处理,当主Activity退出时,播放音乐的服务还没有结束,当程序退出后音乐还在播放,当用户再次点击桌面上的音乐程序图标时,会再次执行启动画面,对用户来说,怎么程序还在运行的时候,又重新打开了一个新的,是不是我这样操作会启动两个音乐播放器啊！针对这样的情况,就需要在主Activity里按back时候时行监听,询问用户是退出还是隐藏,或者执行程序中设置的一个默认操作。如果是退出,我们就需要结束程序进程,Activity、Service等等，如果是隐藏,我们就需要实现手机上按Home时的效果,也就是隐藏后,当用户再次单击桌面上程序图标时，不会执行启动画面,而是直接进入程序栈中最上层退出时正在显示的Activity。
+
+实现按Home键时隐藏程序的效果:
+
+1:Android 2.0之前需要监听按键事件,进行判断是不是按下了back键
+
+2:Android 2.0之后系统提供了一个onBackPressed()方法,这个方法就是专门用来监听back键事件的,所以只需重写onBackPressed()方法即可
+
+    @Override
+public void onBackPressed() {
+    //实现Home键效果
+    //super.onBackPressed();这句话一定要注掉,不然又去调用默认的back处理方式了
+    Intent i= new Intent(Intent.ACTION_MAIN);
+    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    i.addCategory(Intent.CATEGORY_HOME);
+    startActivity(i); 
+}
+3
+  
+退出应用程序的实现:可以自己写个方法,例如:
+
+    public void exitProgrames(){
+    Intent startMain = new Intent(Intent.ACTION_MAIN);
+            startMain.addCategory(Intent.CATEGORY_HOME);
+            startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(startMain);
+            android.os.Process.killProcess(android.os.Process.myPid());
+}
+需要添加权限:<uses-permission android:name="android.permission.RESTART_PACKAGES" />
+
+
+3.  include 标签的属性：
+    必须同时重载layout_width和layout_height熟悉，其他的layout_*属性才会起作用，否这都会被忽略掉。上面的例子应该写成这样：
+    <include layout="@layout/otherlayout">
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:layout_below="@id/top" />
+    然后才可以像使用其他标签一样，使用include
+    另外，关于xml的复用，还可以使用merge标签，merge标签主要是用来优化显示的，减少View树的层级
+
+4 ：android:maxLength="9" 可以设定EditView的最大位数为 9 为 而int的最大值为-2147483648 到2147483648
+
+
+5******* : 一个activity中，多个同时存在的fragment绑定一个service。。。的问题
+
+
+6.  多线程 互斥与同步
+      /***
+     * 方式one
+     */
+    private final Object SENDLOCK = new Object();
+    public void ttt(){
+        synchronized (SENDLOCK){
+            try {
+                SENDLOCK.wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        SENDLOCK.notifyAll();
+    }
+
+    /**
+     * 方式two
+     */
+    private Lock lock = new ReentrantLock();
+    public void xxx(){
+        // TODO: 2016/10/11
+        try{
+            lock.lock();
+        }finally {
+            //不要忘记，千万不要忘记，在finally中释放锁，否则会出现死锁
+            lock.unlock();
+        }
+    }
+
+    //继续单例化 AtMsgClient ，然后将原来项目中 LocalSocketClient换成它
+
+
+1.java里面是不是每个类都只有唯一的一个Class对象
+  比如有一个Student类
+  然后Class clazz = Student.class;
+      Class clazz1 = Student.class;
+
+  clazz是一个对象吗？那么clazz和clazz1是同一个东西还是说两个不一样？
+  
+  答：clazz是一个对象
+
+      clazz==clazz1
+      都表示Student这个类，使用Class的对象可以知道他所对应的类的信息
+      比如定义了那些属性，有什么方法等（这叫反射）
+
+3.对象锁与静态锁类锁
+
+   private static final byte[] LOCK = new byte[0];
+    //两个AntennaBusiness对象中的线程互斥，必须是static，否则就是两个静态全局对象锁了
+    //他和令一个这个方法不是一个对象，也不是一把锁，所以他们两个并不互斥，他们是两个this对象，应该换一把锁，但是现在没锁也是可以的，先留着吧
+    //synchronized (AntennaBusiness.class){}  ..... AntennaBusiness.class的对象全局也只有一份，他也可以当成全局锁，但是看起来高大上，其实不然，因为他们锁是有限的。如果需要的锁多会被用完，而也耦合度也高
+    //synchronized (this.getClass()){} ...和上面的写法一样

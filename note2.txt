@@ -1,0 +1,74 @@
+第二周：
+1.实验了BroadcastReciever的使用步骤和简单的Activity和Broadc的通讯
+  a. 新建一个类，继承抽象类自BroadcastReciever，实现它为实现的方法onReciever；在里面写当接收到广播室要执行的命令，Toast和Notification都以实现。
+  b. 在manifest文件中注册这个类，尤其注意的是inter-filter中action要写，不然不知道接受哪一个，catalogy也写上，使用默认的。
+  c. 发送广播sendBoradcast(new Inten(String action))；就可以了，传参用 Intent；如果要跨应用，就要在manifest中exported=true
+  c. //在要给他发广播的地方注册它：registerReceiver(mReciever, filter)用到一个Reciever和一个filter。(在manifest中已经注册，就不需要在代码中注册了)
+  extra:跨应用 通过intent设置组件和权限的方式发送广播：
+        Intent intent = new Intent();
+	intent.setComponent(new ComponentName("com.example.boradcastusing", "com.example.boradcastusing.MyReciever"));
+	sendBroadcast(intent, "android.intent.action.MY_BROADCAST");
+2.TextView也能增加点击事件
+3. i+1和i++以及++i的区别  i+1本条语句生效，获得i+1的值，下次循环，i该是几还是几，++i = i=i+1 即把i+1赋值给i ，而i++即本条语句是i，下一条是i+1
+4.actionbar的设置在onOptionMenuSelect()方法里，和按钮的设置方法一样,他的Id是android.R.di.home  创建menu的方法在onCreateOptionsMenu(Menu menu)和activity，fragment的加载方法类似
+  actionbar的菜单都定义在res/menu文件夹下，以resource为根目录，item为项，定义它是否显示在actionbar中，用属性showAsAction ，支持| ，文件记载和fragment差不多，用menu.inflate()
+
+5. RalativeLayout运用的不是很熟练，需要练习
+   利用RalativeLayout在ListView后面增加按钮或者其他的View。
+   其中，layout_alignParentBottom = true的意思为位于父容器的底部
+         layout_below = @+id 的意思是在谁的后面，如果是listview,且内容太长，已经超出了屏幕范围，增加这一条则不会再listview下面增加按钮，因为他要在100条listview item之后出现。
+         right和end要同时使用，是为了兼容版本
+         将底部的view的背景的透明度设为f就可以隐藏listview经过的item了
+         在Ralativelayout里面镶嵌liearlayout,则liearlayout里面的属性还是按照liearlayou来，不受外面的影响
+         Ralativelayout也有warp_content和match_parent值
+         Ralativelayout比linearlayout强大
+         最后一条数据会被遮盖，看不见，我的解决方法，最后增加一条空数据
+
+
+1.exec方法本来就是执行文件的，执行可执行文件，所谓的命令，其实他个命令本身也是可执行文件。而我们自己写的shell脚本也可以当做命令去执行。
+2.BufferedReader丢失数据包？？？？？？？？？
+3.在方法内部要判断 if（str == null）{。。。return;}而在使用这方发的时候也要判断，判断他为空的时候给他啊做出相应的现实，两者没有重合。
+
+1.单纯的contentprovider并不难，他比activity，service，reciever都要简单，毕竟他没有生命后期，没有那么多东西要注意的。
+  但是他反而有时最难的，难就难在他和SQLite数据库的交互上，其实所有在content中那些看起来很复杂的操作都是对SQLite的操作。
+  将所以对SQLite的操作拿出去，因为可以在activity中使用SQLite，也可以在service中使用，当然也可以在reciever中使用，更可以单独使用SQLite数据库。只是在provider中使，，可以提供一套向供其他应用开放的借口而已，让他们用来操作我们的数据库。
+  就像，不能建立通信，service毫无存在的意义一样，不在他之中操作数据库，他也没有存在的意义。单纯的provider没有任何意义，只有当他和数据库结合其他的时候才有意义。因为对SQLite的操作难，所以contenProvider也变的难了。
+ 
+  抛弃SQLite数据库，那么想要让跨应用使用content的provider，很简单 ，一下几步：
+  1.创建自己contentprovider类，使其继承抽象类contentprovider。
+  2.在manifest文件中注册它，让他给他name，*exported，*authorities属性，将authorities定义常量Uri
+  3.在其他应用子使用getContentResolver()和Uri就可以使用它了。
+  其他的全部都是对数据库的操作了。
+2.焦点focus问题 :checkBox 抢占 ListView 的focus问题，需要将checkBox的
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+设置为false
+3.在listview中包裹checkbox，可以在adapter中给他添加鼠标点击事件。然后外部方法中的int position改为final int position 增加一个static的缓冲HashMap，保存它的是否被选中的状态
+
+1. Java 心跳 长连接
+2. 遍历文件夹和文件
+3. 多线程+IO
+4.static final 内部类
+5.Dialog对象
+6.Android 和Java的架构对比
+7.线程的join方法
+8.EditView的hint属性
+9.java多继承与内部类
+
+
+1.Exception，异常的throw的用处不少，可以将异常公开，反馈给调用他的人。try...catche...,和if(...){...}差不多，只不过try catch=if(xxx have excption){xxx}
+  catch里面不一定要e.print...它完全可以当成正常的if（）{里面的语句来执行，可以出来，可以做加减，可以设置监听，可以。。。return等等}，异常是指某些事情的特殊的情况发生，当这种特殊的情况出现的时候，无法像正常情况异常去处理，必须单独的去处理它，而且异常无法避免，他是客观存在的，
+  ，比如说除数为0异常，谁也无法清除除数0这个数字，因此总会存在说有的数中0作为除数的时候，遇到这种情况的时候我们应该怎么去处理它，当然可以把这种情况用if去处理他，但是java中有更好用的，专门为这些东西弄了一套机制，就是异常处理机制。处理了这种异常，当遇到这种情况是，自然就不会程序崩溃。
+  而错误，是应该能避免的，他不是客观存在的，我们也不应该去处理这种错误，应该去改变我们错误的行为。比如违法是不对的，我们不应该违法，违法不是能去处理的，自能终止这种行为。
+  异常的捕获 异常的处理 throw throws
+2.String 字符串的三种拼接方式：
+  1.String.concat()
+  2.StringBuilder 比concat差在空间开销上
+  3.s+="xxx";方式性能太差。不建议使用，尤其是对性能要求高的时候
+3.String 字符串的创建方式。
+  1.String s = ""; 
+  2.new String();创建对象的方式，比1要慢
+  3.s+""与字符串拼接第三种方式差不多性能、
+4.字符串格式化String.format()速度也非常慢 10亿次 55万毫秒ms    微妙us 纳秒ns
+
+5.i++ ++i i+=1 i=i+1 速度上差不多不多，很小，几乎看不出来，但是i++还是好了那么一点点

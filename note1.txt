@@ -65,3 +65,15 @@ PreferenceScreen中的控件也是控件，也要有事件监听，一般是值�
 
 4.实现了不通过xml创建Activity的方法。创建一个LinerLayout content是Acticity.this，然后给他设置布局，给他设置layout——width和height，给他addview，然后再oncreateview里面传入它。
   其实，不通过Layout，直接给他一个ViewGroup或者button或者TextView也是可以的所有的View都是可以的，因为他需要的就是View，甚至什么也不给也是可以的，是一个空的页面。
+  
+1.activity绑定service，如果在oncreate里bind，则要在ondestroy里unbind，如果放在onstop里，则切换activity会被销毁，但切换回界面不会被再次bind。
+  如果放在onstop里unbindService，则要在onstart里bindService，这些切换界面的时候，服务会被来回的bind的unbind，很方便。
+  如果放在onpause里unbindService，则要在onresume里bindService，这样在弹出dialog的时候，service会被unbind，关闭dialog服务会被bind。
+  1,3都不很好，最建议使用第2种。第1种第二建议，如果这样，不如直接使用startService和stopService了。或者同事即start有bind这种方式。第三中不太建议。
+  如果非要放在在oncreate里bind，在onstop里bunbid，则要再在onrestart里bind一次。这样要写两次bind，如果特别需要，不建议这么写。代码重复。
+  综上：建议使用onstart bind onstop unbind 和oncreat start onstart bind onstop unbind ondestroy stop 这两种方式。
+2.AIDL 本地的时候很容易就实现了，但是使用AIDL的时候遇到了困难，结果弄了一下午的时间
+3.Notification的使用，使用Notification.Builder 构建Notification然后使用buid()方法，返回Notification构建好的对象。使用NotificationManager发布。
+  Notification的iocn属性必须被设置。
+
+4.接口回调机制。

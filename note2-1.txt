@@ -1,0 +1,149 @@
+1.Android6.0以上不在支持操作sdcard，所有的文件都要放在内部存储上，获得它的路径方法为：
+
+getFilesDir().getAbsolutePath()  得到/data/data/apppeckage/files/文件夹路径
+
+2.解决Listview下部最后一列被遮挡的问题：
+Button ok = (Button)findViewById(R.id.ok);
+		int w = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+		int h = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+		ok.measure(w, h);
+		int height = ok.getMeasuredHeight();
+		RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+		lp.setMargins(0, height-18, 0,height+18);
+		mListView.setLayoutParams(lp);
+
+123SSss
+
+1。Android6.0即sdk23以上版本，操作操作sdcard、通讯录、打电话、短信、相册、等 ，应用安装时默认不打开这些权限，必须手动去设置-应用管理-应用-权限-打开这些权限。
+也可以通过代码动态的获取权限，方式如下：
+
+Android6.0即sdk23及以上版版本，操作sdcard、通讯录、打电话、短信、相册、等需要访问到用户隐私的系统服务的时候，不仅要在manifest文件中声明权限，还要在使用的
+时候，动态的检查权限，如果没有权限，将弹出对话框询问用户是否允许赋予该权限。需要用户点击确定赋予了权限之后，才能继续执行这些操作。
+举例：
+if (ContextCompat.checkSelfPermission(this,
+				Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+			ActivityCompat.requestPermissions(this,
+					new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE }, 2);
+		} else {
+			writeSdcard();
+		}
+
+当用户检查到不具备权限，去申请玩权限之后，是不会执行sdcard操作的，他会去异步执行onRequestPermissionsResult()方法
+@Override
+	public void onRequestPermissionsResult(int requestCode,
+			String[] permissions, int[] grantResults) {
+		if (requestCode == 2) {
+			if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+				//callPhone();
+				writeSdcard();
+			} else {
+				insertStorageWrapper();
+				/*Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT)
+						.show();*/
+			}
+			return;
+		}
+		
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+这些最简单权限申请就完成了。接下来再去完成sdcard的操作：
+private void writeSdcard() {
+		if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
+			File file = new File(Environment.getExternalStorageDirectory(), "RuntimePermissions/log");
+			if(!file.exists()){
+				file.mkdirs();
+			}
+			if(file.exists()){
+				File file2 = new File(file, "test.log");
+				if(!file2.exists()){
+					try {
+						file2.createNewFile();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+	}
+
+1. ./ 和sh的区别 sh 是指的#!/bin/sh声明的脚本，而./则不比是sh声明的脚本，他可以是其他语言，比如phtyon语言，要是系统默认的语言是#!/bin/sh的话，那么他俩没啥区别。
+
+
+2. sh 一个文件去代替./； ls -l 可以产看文件权限,而不是ll
+
+ll并不是linux下一个基本的命令，它实际上是ls -l的一个别名。
+Ubuntu默认不支持命令ll，必须用 ls -l，这样使用起来不是很方便。
+如果要使用此命令，可以作如下修改：
+打开 ~/.bashrc
+找到 #alias ll=’ls -l’，去掉前面的#就可以了。（关闭原来的终端才能使命令生效）
+这样个人用户可以使用ll命令，当切换成超级用户后，使用ll命令时提示找不到命令，那是因为你只是修改了个人用户的配置，所以，切换成root后做相同的操作即可解决问题。
+启示：我们可以通过修改~/.bashrc添加任何其他的命令别名。
+
+
+还有另外一种实现方法：
+首先直接用vi创建文件“ll”。
+vi ll
+在里面写上
+ls -l
+保存。然后将这个新的“ll”文件copy到usr/bin下，就可以直接使用了。
+
+
+1.android View绘图：绘制点Point ，绘制线 line，绘制曲线Arc，绘制路径Path ，绘制扇形Arc，绘制椭圆Oval绘制圆角矩形RoundRect，绘制图片
+
+  新建一个类继承自View,然后重写类的onDreaw方法.
+  需要一个画笔，一个画布去绘画
+  最后创建该类对象，让对象绘制使用view.invalidate();
+  将对象给Actvitiy或者布局。
+
+2.数据统计让我不得不去开始研究 android中的图表和2D绘制。
+
+3.android中的库引用在proportise-android -isLibrary后有一个add按钮,在哪里添加。
+
+4.marge标签的使用以及 ，启动 tools> hierarchyviewer.bat工具查看当前UI结构视图：
+
+5.android 两种引用库的方式，一种是引用jar文件，另一种是直接把源码导入工程，把整个项目做为lib引用。第二种方式常见于各种开源库。
+
+6.uiautomatorviewer.bat用来检测UI控件和其主要属性属性，以便自动化测试uiautomator可以根据检测到的属性值进行自动化测试用例的开发。
+
+1.android图表处理开源库：https://github.com/lecho/hellocharts-android
+这上面有完整的使用方法，可以按上面来，eclipse下下载jar文件导入即可。
+折线图、柱状图、气泡图、饼图、表格等等可以在网上查找相应资料，功能很强大。
+
+2.沉浸式Theme,即将上部title和actionbar的颜色融为一体。
+
+3.使用Runtime.getRuntime().exec(new String[]{"/system/bin/sh","-c",cmd},new String[]{},new File("/"));代替./和单命令。
+
+1.ndk开发
+
+
+1.iozone对磁盘读写进行测试，参数的使用。性能 -I
+2.如果listview的下面有按钮什么，可以将listview放在布局的下面，后绘制。这样可以吗？试一下！
+
+1.jni 找不到android.app.Activity类解决方法
+   javah -classpath bin/classes -bootclasspath D:\developer\android\adt-bundle-windows-x86-20140624\sdk\platforms\android-23\android.jar  -d jni com.huawei.hellojni.HelloJni
+
+    
+2.ndk jni 开发常规使用步骤：
+
+    1.搭建ndk开发环境：
+       ndk工具包官网下载
+       eclipse插件可以在bundle-adt中找到是一个jar文件复制到eclipse-plugxxs目录下即可
+       必须有sdk支持。
+    2.在java中定义 native方法。
+      在该类中使用static代码框，家在libso文件。
+    3.使用javah声场native方法的头文件。
+    4.变形对应的c或者c++文件
+    5.编写Android.mk 文件==linux下的makefile
+    6.-proprietary-builder-new-创建一个builder变异c文件
+    7.编译好的so文件在libs/armeabi/文件下。将其一起打包成apk即可。
+
+3.java该怎么用还是怎么用，只是需要定义native方法并使用static加载库，生成h头文件。
+  c/c++层则是多了一个jni.h头文件库，和java打交道的时候需要这里面定义好的方法。
+  其他层c/c++该怎么用还是怎么用。
+
+4.JNI与JVM的关系
+ 还可以在Native代码中嵌入一个JVM，并通过JNI访问运行于其中的Java模块。
+ 
+实际上，JNI是JVM实现中的一部分，因此Native语言和Java代码都运行在JVM的宿主环境（Host Environment），正如图1所示。此外，JNI是一个双向的接口：开发者不仅可以通过JNI在Java代码中访问Native模块，还可以在Native代码中嵌入一个JVM，并通过JNI访问运行于其中的Java模块。可见，JNI担任了一个桥梁的角色，它将JVM与Native模块联系起来，从而实现了Java代码与Native代码的互访。在OPhone上使用Java虚拟机是为嵌入式设备特别优化的Dalvik虚拟机。每启动一个应用，系统会建立一个新的进程运行一个Dalvik虚拟机，因此各应用实际上是运行在各自的VM中的。Dalvik VM对JNI的规范支持的较全面，对于从JDK 1.2到JDK 1.6补充的增强功能也基本都能支持。
+开发者在使用JNI之前需要充分了解其优缺点，以便合理选择技术方案实现目标。JNI的优点前面已经讲过，这里不再重复，其缺点也是显而易见的：由于Native模块的使用，Java代码会丧失其原有的跨平台性和类型安全等特性。此外，在JNI应用中，Java代码与Native代码运行于同一个进程空间内；对于跨进程甚至跨宿主环境的Java与Native间通信的需求，可以考虑采用socket、Web Service等IPC通信机制来实现。
+
+5.使用RegisterNatives方法传递和使用Java自定义类

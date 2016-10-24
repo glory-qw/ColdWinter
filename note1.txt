@@ -47,3 +47,21 @@ PreferenceScreen中的控件也是控件，也要有事件监听，一般是值�
 6. PreferenceManager。getDefaultS不提示是因为这个.是中文的
 
 7.对于那些值不会改变的，如按钮等，给他加上final，以确保它不会被改变
+
+
+1.AndroidManifest.xml文件：1.有sdk的版本 2.application组建 3.权限 4.intent-filter
+
+2.android:weight的使用 父控件layout_wdith ="match_parent" 子 layout_wdith ="0dp" 再weight分配
+
+3.新领域drawable XML file 昨天新领驭sharedpreferences和preference XML文件 
+
+1.一个类中有很多activity或者fragment中有button，将他们的找个统一的类实现他们的监听接口，然后绑定，这样写代码比较清晰。
+  同样的，一个方法中，即有activity加载xml又有加载控件，又有调用shell命令，又有文件处理，都写在一起，如果一个地方使用还好，多了就会使代码不清晰，显得比较混乱，这时候就把这个方法拆分成许多功能独立的方法，再然后把每些同类的方法封装到特有的类中，重复多次使用，可大大减少代码量。又可以使代码看起来比较清晰，不混乱。
+
+2..toString().trim() trim()是去掉前后空格，在if("".equles(str.toString()))判断当输入不为空的执行，但是如果用户输入了一个" "可能还会崩溃，加上。trim()方法if("".equles(str.toString()。trim()))可以防止这种错误的发生。
+   字符串判断：1.null 2.“” 3.trim()既只输入一个空格
+
+3.如果限于水平或者机器逻辑的原因，导致软件不能十分太人性化，那么可以有一个好的反馈，有一个好的返回值，即使返回值不可读，操作错误也要提供教他们操作的方法，这样也可以的。
+
+4.实现了不通过xml创建Activity的方法。创建一个LinerLayout content是Acticity.this，然后给他设置布局，给他设置layout——width和height，给他addview，然后再oncreateview里面传入它。
+  其实，不通过Layout，直接给他一个ViewGroup或者button或者TextView也是可以的所有的View都是可以的，因为他需要的就是View，甚至什么也不给也是可以的，是一个空的页面。

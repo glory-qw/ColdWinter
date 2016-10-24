@@ -1,0 +1,270 @@
+1. 外部类可以访问内部类的方法和属性，内部类也可以访问内部类的方法和属性。
+   外部类可以访问内部类的私有方法和属性，外部类也可以访问内部类的方法和属性。
+   在一个类中，该类拥有所有权，不允许有不能掌控的地方，哪怕是对于他的内部类。
+
+2. 选项卡有好几种实现方式，目前叫推荐使用 ViewPager+LayoutTab组合：
+   <android.support.design.widget.TabLayout
+        android:id="@+id/tabs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:tabIndicatorColor="@color/red"
+        app:tabSelectedTextColor="@color/red"
+        app:tabTextColor="@color/black"/>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/vp_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    //tabIndicator是下面的分割线
+    //选项卡，可以在有限的屏幕内，展示尽量丰富的内容，或者说屏幕的是有效使用
+    //继承HorizontalScrollView滚动条更继承于GroupView
+    //Tab 是 Layout的静态内部类，但是它的构造方法是私有的，他和Layout相对独立,但是外部类可以使用内部类的私有构造
+    //LayoutTab就是Tab的容器，他和ViewPager是同级的,独立的，谁离了谁都可以，不是包含关系
+    //但是LayoutTab可以用来控制ViewPager,为他设置他要控制的ViewPager就可以了。
+
+3. 以后 Adapter写在 Activity的内部，或者Fragment的内部
+
+4. Vector和ArrayList在使用上非常相似,都可用来表示一组数量可变的对象应用的集合,并且可以随机地访问其中的元素。 
+   Vector的方法都是同步的(Synchronized),是线程安全的(thread-safe)，而ArrayList的方法不是，由于线程的同步必然要影响性能，因此,ArrayList的性能比Vector好。
+   当Vector或ArrayList中的元素超过它的初始大小时,Vector会将它的容量翻倍,而ArrayList只增加50%的大小，这样,ArrayList就有利于节约内存空间。
+
+   Vector也是实现了 List<T>接口
+
+5. class ViewPagerAdapter extends PagerAdapter {
+        List<View> views;
+        public ViewPagerAdapter(List<View> views) {
+            this.views = views;
+        }
+        @Override
+        public int getCount() {
+            return this.views.size();
+        }
+
+        @Override
+        public boolean isViewFromObject(View view, Object object) {
+            return view ==object; //谷歌官方推荐写法
+        }
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            container.addView(this.views.get(position));
+            return this.views.get(position);
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            container.removeView(this.views.get(position));
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return titles.get(position);
+        }
+    }
+
+6. 导航页面时用ViewPager做的。
+
+1. ViewPager + View 模式：
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View view1 = inflater.inflate(R.layout.content1,null);
+        ListView lv = (ListView) view1.findViewById(R.id.listview1);
+        List<String> choses =new ArrayList<>();
+        for(int i = 0;i<30;i++){
+            choses.add("这是第二个选项");
+        }
+        ChooseAdapter chooseAdapter = new ChooseAdapter(view1.getContext(),choses);
+        lv.setAdapter(chooseAdapter);
+        View view2 = inflater.inflate(R.layout.content2,null);
+        View view3 = inflater.inflate(R.layout.content3,null);
+        View view4 = inflater.inflate(R.layout.content4,null);
+        View view5 = inflater.inflate(R.layout.content5,null);
+
+        List<View> views = new ArrayList<>();
+        views.add(view1);
+        views.add(view2);
+        views.add(view3);
+        views.add(view4);
+        views.add(view5);
+
+        ViewPagerAdapter adapter = new ViewPagerAdapter(views);
+        viewPager.setAdapter(adapter);
+        tabLayout.setupWithViewPager(viewPager);
+
+Adapter class ViewPagerAdapter extends PagerAdapter {
+        List<View> views;
+        public ViewPagerAdapter(List<View> views) {
+            this.views = views;
+        }
+        @Override
+        public int getCount() {
+            return this.views.size();
+        }
+
+        @Override
+        public boolean isViewFromObject(View view, Object object) {
+            return view ==object; //谷歌官方推荐写法
+        }
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            container.addView(this.views.get(position));
+            return this.views.get(position);
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            container.removeView(this.views.get(position));
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return titles.get(position);
+        }
+ 
+     }
+
+2.ViewPager + Fragment模式：
+        ViewPager viewPager = (ViewPager) findViewById(R.id.vp_id);
+        Fragment f1 = new Fragment1();
+        Fragment f2 = new Fragment2();
+        Fragment f3 = new Fragment3();
+        Fragment f4 = new Fragment4();
+        Fragment f5 = new Fragment5();
+
+        List<Fragment> fragments = new ArrayList<>();
+        fragments.add(f1);
+        fragments.add(f2);
+        fragments.add(f3);
+        fragments.add(f4);
+        fragments.add(f5);
+        MainFragmentPagerAdapter mainFragmentPagerAdapter = new MainFragmentPagerAdapter(getSupportFragmentManager(),fragments);
+        viewPager.setAdapter(mainFragmentPagerAdapter);
+        tabLayout.setupWithViewPager(viewPager);
+
+Adapter  class MainFragmentPagerAdapter extends FragmentStatePagerAdapter {
+       List<Fragment> fragments = new ArrayList<>();
+       public MainFragmentPagerAdapter(FragmentManager fm ,List<Fragment> fragments) {
+           super(fm);
+           this.fragments = fragments;
+       }
+
+       public void addFragment(Fragment fragment){
+           this.fragments.add(fragment);
+       }
+
+       public void removeFragment(Fragment fragment){
+           this.fragments.remove(fragment);
+       }
+
+       public void setFragments(List<Fragment> fragments) {
+           this.fragments = fragments;
+       }
+
+       public List<Fragment> getFragments() {
+           return this.fragments;
+       }
+
+       public void clear(){
+           for(Fragment f : this.fragments){
+               if(null != this.fragments && f.isAdded()){
+                   f.onDestroy();
+               }
+           }
+       }
+
+       @Override
+       public Fragment getItem(int position) {
+           return this.fragments.get(position);
+       }
+
+       @Override
+       public int getCount() {
+           return this.fragments.size();
+       }
+
+   }
+
+1.  Button extends TextView
+
+2.  基带(Baseband)是手机中的一块专门的代码，或者可以理解成为一个专门负责通讯的BIOS，负责完成移动网络中无线信号的解调、解扰、解扩和解码工作。基带的不同会造成信号效果的不同。因为各地、各网络实际情况不同，需要大家自己选择适合自己的基带。在手机刷机的过程中，如果基带没有刷好，手机刷机也不会成功，会出现信号差或者无SM卡等故障。
+
+3. 海思 高通 MTK(联发科) 三星 Intel AMD
+
+4. 各式各样的Drawable
+
+5. 事件的分发   【自定义View，自定义ViewGroup，自定义属性，控件view，布局ViewGroup，动画效果，矢量图，SVG，屏幕适配，版本适配，属性值文件，自定义主题Theme，风格Style，Widget，Drawable，自定义Drawable，2D绘图，OpenGL，音效，事件的分发】
+
+6.//DB sersor xinhao lanya  NFC 等等都可以写一个helper 其实就是工具类
+
+7.  Math.max（） 两个数中较大的那一个
+    Math.min() 两个数中较小的那一个
+    Math。round（float）四舍五入取整数
+    Math。abs（）绝对值
+    Math。random随机数
+    Math。pow（）幂次方
+    Math。sqrt（）平方根
+    此外还有许多
+    百度百科--Math类的常用方法
+
+8.  git以及 github
+
+9.  接受开机广播，可以实现开机自动启动，开机启动service等等。
+  	/**
+	 * 开机广播
+	 * 1.在Manifest文件中注册监听：拦截Action为String action_boot="android.intent.action.BOOT_COMPLETED"
+	 * 2.添加权限：<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+	 * 3.实现Receiver类extends BroadcastReceiver
+	 */
+
+1. MVVM-架构
+
+2.Socket实现服务器与客户端之间的物理连接，并进行数据传输。主要有TCP/UDP两个协议。Socket处于网络协议的传输层。
+TCP：传输控制协议，面向连接的的协议，稳定可靠。当客户和服务器彼此交换数据前，必须先在双方之间建立一个TCP连接，之后才能传输数据。
+UDP：广播式数据传输，UDP不提供可靠性，它只是把应用程序传给IP层的数据报发送出去，但是并不能保证它们能到达目的地。由于UDP在传输数据报前不用在客户和服务器之间建立一个连接，且没有超时重发等机制，故而传输速度很快。
+优点：1.传输数据为字节级，传输数据可自定义，数据量小。相应的移动端开发，手机费用低
+	   2.传输数据时间短，性能高
+	   3.适合C/S之间信息实时交互
+	   4.可以加密，数据安全性高
+缺点： 1.需要对传输的数据进行解析，转化为应用级的数据
+ 	    2.对开发人员的开发水平要求高
+	    3.相对于Http协议传输，增加了开发量
+
+Http请求主要有http协议，基于http协议的soap协议，常见的http数据请求方式有get和post，web服务
+
+优点：1.基于应用级的接口使用方便
+	   2.要求的开发水平不高，容错性强
+缺点： 1.传输速度慢，数据包大。
+	    2.如实现实时交互，服务器性能压力大
+	    3.数据传输安全性差
+
+
+Socket适用场景：网络游戏，银行交互，支付。
+http适用场景：公司OA服务，互联网服务。
+
+
+3. Okhttp  Piasso 框架 android数据绑定
+
+4.  PopupWindow：
+      private void showPopUp(View v) {
+        LinearLayout layout = new LinearLayout(this);
+        layout.setBackgroundColor(Color.DKGRAY);
+        TextView tv = new TextView(this);
+        tv.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        tv.setText("奉劝你们一句，不要得罪天王！");
+        tv.setTextColor(Color.WHITE);
+        layout.addView(tv);
+
+        popupWindow = new PopupWindow(layout,300,400);
+
+        popupWindow.setFocusable(true);
+        popupWindow.setOutsideTouchable(true);
+
+        int[] location = new int[2];
+        v.getLocationOnScreen(location);
+
+        //popupWindow.showAtLocation(v, Gravity.NO_GRAVITY, location[0], location[1]-popupWindow.getHeight());//上方
+        popupWindow.showAsDropDown(v);//下方
+
+        //popupWindow.showAtLocation(v, Gravity.NO_GRAVITY, location[0]-popupWindow.getWidth(), location[1]);//左边
+        //popupWindow.showAtLocation(v, Gravity.NO_GRAVITY, location[0]+v.getWidth(), location[1]);//右边
+    }
